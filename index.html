@@ -315,7 +315,7 @@ function submitOrder() {
     return `${p.name} (${item.size}) x${item.quantity} = ${p.price * item.quantity} EGP`;
   }).join('\n');
   const msg = `🎀 New Order from Roro Accessories!\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nItems:\n${items}\n\nTotal: ${total} EGP`;
-  const waLink = `https://wa.me/201501566819?text=${encodeURIComponent(msg)}`;
+  const waLink = `https://wa.me/201288144886?text=${encodeURIComponent(msg)}`;
   window.open(waLink, '_blank');
   cart = []; saveCart(); updateCount();
   closeCheckout();
