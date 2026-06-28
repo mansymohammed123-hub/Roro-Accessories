@@ -23,17 +23,31 @@
     nav {
       position: sticky; top: 0; z-index: 100;
       background: var(--nav-bg); display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2.5rem; height: 68px;
+      padding: 0 1.5rem; height: 68px;
       box-shadow: 0 2px 16px rgba(231,84,128,0.12);
       border-bottom: 2px solid var(--accent-light);
     }
-    .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.7rem; letter-spacing: 3px; color: var(--accent); }
+    .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.5rem; letter-spacing: 3px; color: var(--accent); }
     .nav-links { display: flex; gap: 2rem; }
     .nav-links a { color: #b06080; text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-weight: 500; transition: color 0.2s; }
     .nav-links a:hover, .nav-links a.active { color: var(--accent); }
     .cart-btn { display: flex; align-items: center; gap: 0.5rem; background: var(--accent); color: var(--white); border: none; padding: 0.55rem 1.3rem; border-radius: 25px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; }
     .cart-btn:hover { background: var(--accent-dark); }
     .cart-count { background: var(--white); color: var(--accent); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+    .hamburger { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--accent); }
+    .mobile-menu { display: none; position: fixed; top: 68px; left: 0; right: 0; background: var(--nav-bg); border-bottom: 2px solid var(--accent-light); z-index: 99; flex-direction: column; padding: 1rem 1.5rem; gap: 1rem; box-shadow: 0 4px 20px rgba(231,84,128,0.15); }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: #b06080; text-decoration: none; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-weight: 500; padding: 0.5rem 0; border-bottom: 1px solid var(--accent-light); }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a.active, .mobile-menu a:hover { color: var(--accent); }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); padding: 1rem; gap: 1rem; }
+      .filters { padding: 1rem 1rem 0; }
+      .section-title { padding: 1.5rem 1rem 0; font-size: 1.4rem; }
+      .cart-sidebar { width: 100vw; }
+    }
     .hero { background: linear-gradient(135deg, #ffd6e0 0%, #ffb3c6 50%, #ff85a1 100%); text-align: center; padding: 5rem 2rem 4rem; position: relative; overflow: hidden; }
     .hero::before { content: '🎀'; position: absolute; top: 20px; left: 5%; font-size: 3rem; opacity: 0.3; }
     .hero::after { content: '✨'; position: absolute; bottom: 20px; right: 5%; font-size: 3rem; opacity: 0.3; }
@@ -108,12 +122,17 @@
   <div class="nav-links">
     <a onclick="filterProducts('all')" class="active" id="nav-all">All</a>
     <a onclick="filterProducts('Accessories')" id="nav-Accessories">Accessories</a>
-    <a onclick="filterProducts('Top')" id="nav-Accessories">Top</a>
-    <a onclick="filterProducts('Dresses')" id="nav-Accessories">Dresses</a>
-    <a onclick="filterProducts('Bottom')" id="nav-Accessories">Bottom</a>
   </div>
-  <button class="cart-btn" onclick="openCart()">🛍 Cart <span class="cart-count" id="cart-count">0</span></button>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <button class="cart-btn" onclick="openCart()">🛍 Cart <span class="cart-count" id="cart-count">0</span></button>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </div>
 </nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a onclick="filterProducts('all');toggleMenu()" class="active" id="mob-all">All</a>
+  <a onclick="filterProducts('Accessories');toggleMenu()" id="mob-Accessories">Accessories</a>
+</div>
 
 <div class="hero">
   <p class="hero-eyebrow">✨ New Collection 2026 ✨</p>
@@ -126,9 +145,6 @@
   <span class="filter-label">Filter:</span>
   <button class="filter-btn active" onclick="filterProducts('all')" data-cat="all">All</button>
   <button class="filter-btn" onclick="filterProducts('Accessories')" data-cat="Accessories">Accessories</button>
-  <button class="filter-btn" onclick="filterProducts('Dresses')" data-cat="Jewelry">Dresses</button>
-  <button class="filter-btn" onclick="filterProducts('Top')" data-cat="Jewelry">Top</button>
-  <button class="filter-btn" onclick="filterProducts('Bottom')" data-cat="Jewelry">Bottom</button>
 </div>
 
 <h2 class="section-title">Our Collection 🎀</h2>
@@ -293,7 +309,7 @@ function submitOrder() {
     return `${p.name} (${item.size}) x${item.quantity} = ${p.price * item.quantity} EGP`;
   }).join('\n');
   const msg = `🎀 New Order from Roro Accessories!\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nItems:\n${items}\n\nTotal: ${total} EGP`;
-  const waLink = `https://wa.me/201501566819?text=${encodeURIComponent(msg)}`;
+  const waLink = `https://wa.me/201234567890?text=${encodeURIComponent(msg)}`;
   window.open(waLink, '_blank');
   cart = []; saveCart(); updateCount();
   closeCheckout();
@@ -306,6 +322,10 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
 }
 
 updateCount();
